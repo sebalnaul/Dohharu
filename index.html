@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>수업 재료 원가 계산기</title>
+<style>
+:root{--bg:#fff8f1;--panel:#fff;--ink:#332923;--muted:#82736a;--line:#e8d9ce;--accent:#92583b;--soft:#f8eee6;--green:#416d53}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+header{padding:22px 18px 16px;background:linear-gradient(135deg,#f0dac9,#fff8f1);border-bottom:1px solid var(--line)}.wrap,main{max-width:1180px;margin:auto}.kicker{font-size:11px;letter-spacing:.14em;font-weight:800;color:var(--accent)}h1{font-size:clamp(24px,4vw,34px);margin:6px 0 0;letter-spacing:-.04em}.titlebar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+button{font:inherit;cursor:pointer}.primary{border:0;border-radius:11px;background:var(--accent);color:white;padding:11px 15px;font-weight:800}.secondary{border:1px solid var(--line);border-radius:10px;background:white;color:var(--ink);padding:9px 12px;font-weight:700}.danger{border:1px solid #f0d5d1;background:#fff5f4;color:#b44740;border-radius:8px;width:32px;height:32px;font-size:18px;flex-shrink:0}
+main{padding:18px;display:grid;gap:16px}.lesson,.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;min-width:0;overflow:hidden}.lesson{padding:15px}
+label{display:block;font-size:12px;color:var(--muted);font-weight:750;margin-bottom:5px}input,textarea{font:inherit;color:var(--ink);border:1px solid #dfd0c5;border-radius:9px;padding:9px 10px;width:100%;min-width:0;background:#fffdfa}input:focus,textarea:focus{outline:2px solid #92583b28;border-color:var(--accent)}#lessonName{font-size:17px;font-weight:700}
+.columns{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:16px;align-items:start}.panel-head{padding:15px 17px;background:var(--soft);border-bottom:1px solid var(--line)}.panel-head h2{margin:0;font-size:19px}.panel-head p{margin:5px 0 0;color:var(--muted);font-size:12px;line-height:1.5}.rows{padding:12px;display:grid;gap:10px}.panel-foot{padding:12px;border-top:1px solid var(--line)}.wide{width:100%}
+.parent-card{border:1px solid var(--line);border-radius:12px;padding:11px;background:#fffdfa}.parent-title,.sub-heading,.use-title{display:flex;align-items:center;gap:8px;margin-bottom:10px}.num{display:inline-flex;align-items:center;justify-content:center;min-width:29px;height:27px;padding:0 5px;border-radius:8px;background:#f2dfd1;color:var(--accent);font-size:12px;font-weight:850;flex-shrink:0}.spacer{flex:1}.parent-title strong,.use-title strong{font-size:14px}
+.parent-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}.parent-fields input[readonly],.readonly{background:#f8f5f2}
+.sub-list{display:grid;gap:8px;padding-left:9px;border-left:3px solid var(--line);margin-left:5px}.sub-row{border:1px solid #eadfd6;border-radius:10px;padding:9px;background:#fff}.sub-heading{margin-bottom:8px}.sub-num{font-size:11px;font-weight:850;color:var(--accent);background:var(--soft);border-radius:6px;padding:5px 7px;white-space:nowrap}.fields{display:grid;grid-template-columns:1.1fr .8fr .8fr .8fr;gap:7px}.fields input{padding:8px 7px;font-size:13px}.small-label{font-size:10px;margin-bottom:4px}.cost-line{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted);margin-top:7px}.cost-line strong{color:var(--ink)}.sub-add{margin-top:9px;width:100%;border:1px dashed #d9c2b2;background:#fff8f1;color:var(--accent);border-radius:9px;padding:9px;font-size:12px;font-weight:800}.parent-total{display:flex;justify-content:space-between;gap:8px;background:var(--soft);border-radius:9px;padding:9px 10px;margin-top:10px;font-size:12px}.parent-total strong{color:#71442d}
+.use-card{border:1px solid #d6e4da;border-radius:12px;padding:12px;background:#fbfdfb}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{background:#f0f6f1;border-radius:9px;padding:9px;min-width:0}.metric label{font-size:10px;margin-bottom:4px}.metric strong{font-size:14px;color:var(--green);overflow-wrap:anywhere}.use-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.usage-breakdown{margin-top:10px;border:1px solid #d6e4da;border-radius:9px;overflow:hidden;background:white}.usage-title{padding:7px 9px;background:#f0f6f1;color:var(--green);font-size:11px;font-weight:850}.usage-line{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 9px;border-top:1px solid #e8f0ea;font-size:12px}.usage-line strong{white-space:nowrap;color:var(--green)}.usage-detail .usage-name{min-width:0;flex:1}.usage-detail .usage-name strong{white-space:normal;color:var(--ink);overflow-wrap:anywhere}.usage-values{display:grid;grid-template-columns:minmax(60px,auto) minmax(60px,auto) minmax(58px,auto);gap:8px;align-items:center;text-align:right;font-size:11px;font-variant-numeric:tabular-nums}.usage-values span{white-space:nowrap}.usage-unit-price,.usage-cost{color:var(--green)}.usage-amount{color:var(--green);font-size:12px}.usage-columns{display:flex;justify-content:space-between;align-items:center;gap:8px}.usage-columns .usage-values{font-size:10px;color:var(--green)}.empty{padding:18px 10px;text-align:center;color:var(--muted);font-size:13px;line-height:1.5}
+.ingredient-summary-wrap{padding:10px}.summary-table{width:100%;border-collapse:collapse;font-size:13px}.summary-table th,.summary-table td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}.summary-table th{background:#fff8f1;color:var(--muted);font-size:11px}.summary-table .numcell{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}.summary-table tfoot td{background:var(--soft);font-weight:850}
+.grand{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 19px;background:#f0dfd2;border:1px solid #e5c8b5;border-radius:15px}.grand-label{font-size:15px;font-weight:800;color:#71442d}.grand-note{font-size:11px;color:#866b5a;margin-top:3px}.grand-total{font-size:clamp(23px,4vw,30px);font-weight:900;color:#71442d;white-space:nowrap}
+dialog{width:min(620px,calc(100% - 24px));border:1px solid var(--line);border-radius:16px;padding:0;color:var(--ink);box-shadow:0 18px 70px #33292335}dialog::backdrop{background:#21181277}.dialog-head{padding:16px;background:var(--soft);display:flex;align-items:center;justify-content:space-between}.dialog-head h2{font-size:19px;margin:0}.dialog-body{padding:16px}.dialog-body p{font-size:13px;line-height:1.6;color:var(--muted);margin-top:0}#recipeText{min-height:220px;resize:vertical;line-height:1.6}.dialog-actions{display:flex;justify-content:flex-end;gap:8px;padding:0 16px 16px}.status{font-size:12px;color:var(--muted);margin-top:8px}
+@media(max-width:850px){.columns{grid-template-columns:1fr}}
+@media(max-width:520px){.usage-values{grid-template-columns:minmax(48px,auto) minmax(48px,auto) minmax(45px,auto);gap:4px;font-size:10px}.usage-amount{font-size:10px}.titlebar{align-items:flex-start;flex-direction:column}.titlebar .primary{width:100%}main{padding:12px;gap:12px}.fields{grid-template-columns:1fr 1fr}.fields .field:first-child{grid-column:1/-1}.parent-fields{grid-template-columns:1fr 1fr}.summary-table th,.summary-table td{padding:8px 4px;font-size:11px}.summary-table th{font-size:10px}.grand{padding:14px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="kicker">CLASS INGREDIENTS</div><div class="titlebar"><h1>수업 재료 원가 계산기</h1><button class="primary" id="openRecipe" type="button">레시피 입력</button></div></div></header>
+<dialog id="recipeDialog">
+  <div class="dialog-head"><h2>하위 재료 레시피 입력</h2><button class="danger" id="closeRecipe" type="button" aria-label="닫기">×</button></div>
+  <div class="dialog-body"><p>한 줄에 하위 재료 하나씩 입력해 주세요.<br>예: 박력분 200g, 설탕 100g, 버터 150g, 달걀 2개</p><textarea id="recipeText" lang="ko" spellcheck="false"></textarea><div class="status" id="recipeStatus"></div></div>
+  <div class="dialog-actions"><button class="secondary" id="cancelRecipe" type="button">취소</button><button class="primary" id="applyRecipe" type="button">하위 재료 만들기</button></div>
+</dialog>
+<main>
+  <section class="lesson"><label for="lessonName">수업명</label><input id="lessonName" lang="ko" autocomplete="off" spellcheck="false"></section>
+  <div class="columns">
+    <section class="panel"><div class="panel-head"><h2>레시피 구성</h2><p>상위 재료 안에 하위 재료를 등록하세요. 원가는 하위 재료의 사용량을 기준으로 계산됩니다.</p></div><div class="rows" id="recipeGroups"></div><div class="panel-foot"><button class="primary wide" id="addParent" type="button">＋ 상위 재료 추가</button></div></section>
+    <section class="panel"><div class="panel-head" style="background:#edf4ef"><h2>전체 레시피 사용</h2><p>상위 재료의 총원가와 단가를 확인하고, 전체 레시피에 사용할 양을 입력하세요.</p></div><div class="rows" id="useGroups"></div></section>
+  </div>
+  <section class="panel"><div class="panel-head"><h2>하위 재료 전체 사용량</h2><p>여러 상위 재료에 중복 사용된 하위 재료를 이름과 단위별로 합산합니다.</p></div><div class="ingredient-summary-wrap" id="ingredientSummary"><div class="empty">레시피를 추가하면 하위 재료별 전체 사용량과 원가가 표시됩니다.</div></div></section>
+  <section class="grand"><div><div class="grand-label">전체 레시피 원가</div><div class="grand-note">전체 레시피에 입력한 상위 재료 사용량 기준</div></div><div class="grand-total" id="grandTotal">0원</div></section>
+</main>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const recipeGroups=$('recipeGroups'), useGroups=$('useGroups');
+let groups=[],nextParentId=1,nextSubId=1;
+const num=v=>Math.max(0,Number(String(v==null?'':v).replace(/,/g,'.'))||0);
+const money=n=>Math.round(Number.isFinite(n)?n:0).toLocaleString('ko-KR')+'원';
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function newSub(name='',used='',unit='g'){return {id:nextSubId++,name,purchaseAmount:'',purchasePrice:'',used,unit};}
+function newParent(name='',subs){groups.push({id:nextParentId++,name,usedInWhole:'',subs:subs&&subs.length?subs:[newSub()]});render();}
+function subCost(s){const amount=num(s.purchaseAmount);return amount>0?(num(s.purchasePrice)/amount)*num(s.used):0;}
+function stats(p){
+ const totalCost=p.subs.reduce((a,s)=>a+subCost(s),0);
+ const usedUnits=[...new Set(p.subs.filter(s=>num(s.used)>0).map(s=>s.unit||'g'))];
+ const compatible=usedUnits.length<=1,unit=usedUnits[0]||(p.subs[0]&&p.subs[0].unit)||'g';
+ const totalAmount=compatible?p.subs.reduce((a,s)=>a+num(s.used),0):null;
+ const unitCost=compatible&&totalAmount>0?totalCost/totalAmount:null;
+ const used=num(p.usedInWhole),usedCost=unitCost===null?0:unitCost*used;
+ return {totalCost,unit,totalAmount,unitCost,usedCost,compatible};
+}
+function effectiveRows(){
+ const map=new Map();
+ // The whole-recipe usage inputs were removed from the right tab, so the calculator
+ // treats the entered amount of every subingredient as the amount used in this recipe.
+ // Identical names and units are combined across all parent recipes.
+ groups.forEach(p=>{
+  p.subs.forEach(s=>{
+   const name=s.name.trim(),unit=s.unit||'g',amount=num(s.used);
+   if(!name||amount<=0)return;
+   const key=name.toLocaleLowerCase('ko-KR')+'|'+unit;
+   if(!map.has(key))map.set(key,{name,unit,amount:0,cost:0});
+   const row=map.get(key);
+   row.amount+=amount;
+   row.cost+=subCost(s);
+  });
+ });
+ return [...map.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko-KR'));
+}
+function renderSummary(){
+ const host=$('ingredientSummary');
+ if(!groups.length){host.innerHTML='<div class="empty">레시피를 추가하면 하위 재료별 전체 사용량과 원가가 표시됩니다.</div>';return;}
+ const rows=effectiveRows();
+ if(!rows.length){host.innerHTML='<div class="empty">하위 재료의 이름과 사용량을 입력하면 전체 사용량이 여기에 표시됩니다.</div>';return;}
+ const total=rows.reduce((a,r)=>a+r.cost,0);
+ host.innerHTML='<table class="summary-table"><thead><tr><th>하위 재료</th><th class="numcell">전체 사용량</th><th class="numcell">단가</th><th class="numcell">전체 원가</th></tr></thead><tbody>'+
+ rows.map(r=>'<tr><td>'+esc(r.name)+'</td><td class="numcell">'+Number(r.amount.toFixed(3)).toLocaleString('ko-KR')+' '+esc(r.unit)+'</td><td class="numcell">'+(r.amount>0?money(r.cost/r.amount)+' / '+esc(r.unit):'—')+'</td><td class="numcell">'+money(r.cost)+'</td></tr>').join('')+
+ '</tbody><tfoot><tr><td>합계</td><td></td><td></td><td class="numcell">'+money(total)+'</td></tr></tfoot></table>';
+}
+function render(){
+ if(!groups.length){
+  recipeGroups.innerHTML='<div class="empty">상위 재료를 추가하거나 레시피 텍스트를 입력하세요.</div>';
+  useGroups.innerHTML='<div class="empty">상위 재료를 추가하면 이곳에서 전체 레시피 사용량을 입력할 수 있어요.</div>';
+  $('grandTotal').textContent=money(0);renderSummary();return;
+ }
+ recipeGroups.innerHTML=groups.map((p,pi)=>{
+  const st=stats(p);
+  return '<div class="parent-card" data-parent="'+p.id+'"><div class="parent-title"><span class="num">'+(pi+1)+'</span><strong>재료 '+(pi+1)+'</strong><span class="spacer"></span><button type="button" class="danger" data-delete-parent="'+p.id+'" title="상위 재료 삭제">🗑</button></div>'+
+  '<div class="parent-fields"><div><label class="small-label" for="pn-'+p.id+'">상위 재료명</label><input id="pn-'+p.id+'" data-parent-field="name" data-parent-id="'+p.id+'" value="'+esc(p.name)+'" lang="ko" autocomplete="off"></div><div><label class="small-label">하위 재료 합산 원가</label><input readonly value="'+money(st.totalCost)+'"></div></div>'+
+  '<div class="sub-list">'+p.subs.map((s,si)=>'<div class="sub-row" data-sub="'+s.id+'"><div class="sub-heading"><span class="sub-num">'+(pi+1)+'-'+(si+1)+'</span><strong style="font-size:12px">하위 재료 '+(pi+1)+'-'+(si+1)+'</strong><span class="spacer"></span><button type="button" class="danger" data-delete-sub="'+s.id+'" title="하위 재료 삭제">×</button></div>'+
+  '<div class="fields"><div class="field"><label class="small-label">재료명</label><input data-sub-field="name" data-sub-id="'+s.id+'" data-parent-id="'+p.id+'" value="'+esc(s.name)+'" lang="ko" autocomplete="off"></div>'+
+  '<div class="field"><label class="small-label">구매량 ('+esc(s.unit)+')</label><input data-sub-field="purchaseAmount" data-sub-id="'+s.id+'" data-parent-id="'+p.id+'" inputmode="decimal" value="'+esc(s.purchaseAmount)+'"></div>'+
+  '<div class="field"><label class="small-label">구매가격 (원)</label><input data-sub-field="purchasePrice" data-sub-id="'+s.id+'" data-parent-id="'+p.id+'" inputmode="decimal" value="'+esc(s.purchasePrice)+'"></div>'+
+  '<div class="field"><label class="small-label">사용량 ('+esc(s.unit)+')</label><input data-sub-field="used" data-sub-id="'+s.id+'" data-parent-id="'+p.id+'" inputmode="decimal" value="'+esc(s.used)+'"></div></div>'+
+  '<div class="cost-line"><span>구매 단가</span><strong data-purchase-unit>'+ (num(s.purchaseAmount)>0?money(num(s.purchasePrice)/num(s.purchaseAmount))+' / '+esc(s.unit):'구매량 입력 필요')+'</strong></div>'+
+  '<div class="cost-line"><span>레시피 사용 원가</span><strong data-sub-cost>'+money(subCost(s))+'</strong></div></div>').join('')+'</div>'+
+  '<button type="button" class="sub-add" data-add-sub="'+p.id+'">＋ 하위 재료 추가</button><div class="parent-total"><span>'+(st.compatible&&st.totalAmount!==null?'완성량 '+Number(st.totalAmount.toFixed(3))+' '+esc(st.unit):'하위 재료 단위가 달라 완성량 합산 불가')+'</span><strong>상위 재료 원가 '+money(st.totalCost)+'</strong></div></div>';
+ }).join('');
+ useGroups.innerHTML=groups.map((p,pi)=>{
+  const st=stats(p),name=p.name.trim()||'재료 '+(pi+1),unit=st.unit||'g';
+  return '<div class="use-card" data-use-parent="'+p.id+'"><div class="use-title"><span class="num">'+(pi+1)+'</span><strong>'+esc(name)+'</strong><span class="spacer"></span></div>'+
+  '<div class="metrics"><div class="metric"><label>상위 재료 총원가</label><strong data-total-cost>'+money(st.totalCost)+'</strong></div><div class="metric"><label>상위 재료 단가</label><strong data-unit-cost>'+(st.unitCost===null?'단위 확인 필요':money(st.unitCost)+' / '+esc(unit))+'</strong></div></div>'+
+  '<div class="usage-breakdown"><div class="usage-title usage-columns"><span>하위 재료</span><div class="usage-values"><span>단가</span><span>원가</span><span>사용량</span></div></div>'+(p.subs.length?p.subs.map((s,si)=>'<div class="usage-line usage-detail"><div class="usage-name"><strong>'+(pi+1)+'-'+(si+1)+' · '+esc(s.name.trim()||'이름 없는 재료')+'</strong></div><div class="usage-values"><span class="usage-unit-price">'+(num(s.purchaseAmount)>0?money(num(s.purchasePrice)/num(s.purchaseAmount))+' / '+esc(s.unit):'—')+'</span><span class="usage-cost">'+money(subCost(s))+'</span><strong class="usage-amount">'+esc(s.used||'0')+' '+esc(s.unit||'')+'</strong></div></div>').join(''):'<div class="usage-line">하위 재료 없음</div>')+'</div>'+
+  (!st.compatible?'<div class="cost-line">주의: 하위 재료의 사용 단위가 서로 달라 상위 재료 단가를 계산할 수 없습니다.</div>':'')+'</div>';
+ }).join('');
+ $('grandTotal').textContent=money(groups.reduce((a,p)=>a+stats(p).totalCost,0));
+ renderSummary();
+}
+function refresh(){
+ groups.forEach(p=>{
+  const st=stats(p),card=recipeGroups.querySelector('[data-parent="'+p.id+'"]');
+  if(card){
+   const pf=card.querySelectorAll('.parent-fields input');if(pf[1])pf[1].value=money(st.totalCost);
+   p.subs.forEach(s=>{
+    const row=card.querySelector('[data-sub="'+s.id+'"]');if(!row)return;
+    const pu=row.querySelector('[data-purchase-unit]'),co=row.querySelector('[data-sub-cost]');
+    if(pu)pu.textContent=num(s.purchaseAmount)>0?money(num(s.purchasePrice)/num(s.purchaseAmount))+' / '+s.unit:'구매량 입력 필요';
+    if(co)co.textContent=money(subCost(s));
+   });
+   const total=card.querySelector('.parent-total');if(total)total.innerHTML='<span>'+(st.compatible&&st.totalAmount!==null?'완성량 '+Number(st.totalAmount.toFixed(3))+' '+esc(st.unit):'하위 재료 단위가 달라 완성량 합산 불가')+'</span><strong>상위 재료 원가 '+money(st.totalCost)+'</strong>';
+  }
+  const use=useGroups.querySelector('[data-use-parent="'+p.id+'"]');
+  if(use){
+   const title=use.querySelector('.use-title strong');if(title)title.textContent=p.name.trim()||'재료 '+(groups.indexOf(p)+1);
+   const tc=use.querySelector('[data-total-cost]'),uc=use.querySelector('[data-unit-cost]'),used=use.querySelector('[data-used-cost]');
+   if(tc)tc.textContent=money(st.totalCost);if(uc)uc.textContent=st.unitCost===null?'단위 확인 필요':money(st.unitCost)+' / '+st.unit;if(used)used.value=money(st.usedCost);
+   const breakdown=use.querySelector('.usage-breakdown');if(breakdown)breakdown.innerHTML='<div class="usage-title">하위 재료별 단가 및 사용량</div>'+p.subs.map((s,si)=>'<div class="usage-line usage-detail"><div class="usage-name"><strong>'+(groups.indexOf(p)+1)+'-'+(si+1)+' · '+esc(s.name.trim()||'이름 없는 재료')+'</strong></div><div class="usage-values"><span class="usage-unit-price">'+(num(s.purchaseAmount)>0?money(num(s.purchasePrice)/num(s.purchaseAmount))+' / '+esc(s.unit):'—')+'</span><span class="usage-cost">'+money(subCost(s))+'</span><strong class="usage-amount">'+esc(s.used||'0')+' '+esc(s.unit||'')+'</strong></div></div>').join('');
+   const note=use.querySelector('.cost-line');if(!st.compatible&&!note){const div=document.createElement('div');div.className='cost-line';div.textContent='주의: 하위 재료의 사용 단위가 서로 달라 상위 재료 단가를 계산할 수 없습니다.';use.appendChild(div);}else if(st.compatible&&note)note.remove();
+  }
+ });
+ $('grandTotal').textContent=money(groups.reduce((a,p)=>a+stats(p).totalCost,0));renderSummary();
+}
+function onFieldEdit(e){
+ const el=e.target;
+ if(!el || !el.dataset) return;
+ if(el.dataset.subField){
+  const p=groups.find(x=>x.id===Number(el.dataset.parentId));if(!p)return;
+  const s=p.subs.find(x=>x.id===Number(el.dataset.subId));if(!s)return;
+  s[el.dataset.subField]=el.value;refresh();return;
+ }
+ if(el.dataset.parentField){
+  const p=groups.find(x=>x.id===Number(el.dataset.parentId));if(!p)return;
+  p[el.dataset.parentField]=el.value;refresh();
+ }
+}
+document.addEventListener('input',onFieldEdit);
+document.addEventListener('change',onFieldEdit);
+document.addEventListener('click',function(e){
+ const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.deleteParent){groups=groups.filter(p=>p.id!==Number(b.dataset.deleteParent));render();return;}
+ if(b.dataset.deleteSub){const id=Number(b.dataset.deleteSub);const p=groups.find(x=>x.subs.some(s=>s.id===id));if(p){p.subs=p.subs.filter(s=>s.id!==id);render();}return;}
+ if(b.dataset.addSub){const p=groups.find(x=>x.id===Number(b.dataset.addSub));if(p){p.subs.push(newSub());render();}return;}
+});
+$('addParent').addEventListener('click',()=>newParent());
+const dlg=$('recipeDialog');
+$('openRecipe').addEventListener('click',()=>{ $('recipeStatus').textContent='';dlg.showModal();$('recipeText').focus();});
+function closeDialog(){dlg.close();}
+$('closeRecipe').addEventListener('click',closeDialog);$('cancelRecipe').addEventListener('click',closeDialog);
+function parseRecipe(text){
+ // Accept one ingredient per line or comma-separated ingredients.
+ const result=[],lines=text.split(/[\r\n,，]+/).map(x=>x.trim()).filter(Boolean);
+ const units='kg|㎏|g|그램|ml|㎖|l|리터|밀리리터|개|알|장|줄기|송이|큰술|작은술|티스푼|tsp|tbsp|컵|꼬집|방울|팩|봉|통';
+ const first=new RegExp('^(\\d+(?:[.,]\\d+)?)\\s*('+units+')\\s*(.+)$','i');
+ const last=new RegExp('^(.+?)\\s*[:：=]?\\s*(\\d+(?:[.,]\\d+)?)\\s*('+units+')\\s*$','i');
+ lines.forEach(line=>{
+  line=line.replace(/^[\s•·\-*]+/,'').replace(/^\d+[.)、]\s*/,'').trim();
+  let m=line.match(first),name='',amount=0,unit='';
+  if(m){amount=Number(m[1].replace(',','.'));unit=m[2];name=m[3].trim();}
+  else{m=line.match(last);if(m){name=m[1].replace(/[:：=]+$/,'').trim();amount=Number(m[2].replace(',','.'));unit=m[3];}}
+  if(!name||!Number.isFinite(amount)||amount<0)return;
+  const low=unit.toLowerCase();if(low==='kg'||unit==='㎏'){amount*=1000;unit='g';}else if(low==='g'||unit==='그램'){unit='g';}else if(low==='l'||unit==='리터'){amount*=1000;unit='ml';}else if(low==='ml'||unit==='㎖'||unit==='밀리리터'){unit='ml';}
+  const old=result.find(x=>x.name===name&&x.unit===unit);if(old)old.used+=amount;else result.push({name,used:amount,unit});
+ });
+ return result;
+}
+$('applyRecipe').addEventListener('click',()=>{
+ const parsed=parseRecipe($('recipeText').value);
+ if(!parsed.length){$('recipeStatus').textContent='읽을 수 있는 재료가 없어. 예: 박력분 200g, 설탕 100g처럼 쉼표나 줄바꿈으로 구분해 줘.';return;}
+ newParent('',parsed.map(x=>newSub(x.name,String(x.used),x.unit)));
+ $('recipeText').value='';closeDialog();
+});
+render();
+})();
+</script>
+</body>
+</html>
